@@ -20,7 +20,9 @@ end
 addpath(genpath(currentPath));
 
 %% SETTINGS
-settings.Mach = 0.1;
+settings.Mach = 0.1158;
+settings.xcg = 1.2206;
+
 %%% NOSE
 settings.Dpitot = [0.0025 0.006 0.006 0.025];
 settings.Lpitot = [0.0048 0.0379 0.0268];

@@ -81,28 +81,35 @@ for k = 1:Na
     end
     tau = 1 + settings.Dcentr/2 /(settings.s + settings.Dcentr/2);
     fins.CN_alpha(k) = fins.CN_alphai(k, 1) * Nf/2 * 1 * tau;
-    fins.X = sum(settings.Lpitot) + settings.Lnose + settings.Xle + settings.yMAC + 0.25*settings.c_bar;
+    fins.X(k) = sum(settings.Lpitot) + settings.Lnose + settings.Xle + settings.yMAC + 0.25*settings.c_bar;
+    fins.CM_alpha(k) = (fins.X(k) - (settings.xcg + settings.Lnose + sum(settings.Lpitot)))*fins.CN_alpha(k);
+    fins.CM = fins.CM_alpha(k) * alpha;
 end
 
 out.fins = fins;
 
 %% TOTAL
 total.CN_alpha = zeros(Na, 1);
+total.CM_alpha = zeros(Na, 1);
 total.X = zeros(Na, 1);
 
 for i = 1:Na
     for k1 = 1:size(body.CN_alpha, 2)
         X_body = sum(body.X(i, :).*body.CN_alpha(i, :))/sum(body.CN_alpha(i, :));
         CN_alpha_body = sum(body.CN_alpha(i, :));
+        CM_alpha_body = sum(body.Cm_alpha(i, :));
     end
     
     for k2 = 1:size(fins.CN_alpha, 2)
-        total.X(i) = (X_body*CN_alpha_body + fins.X*fins.CN_alpha(i, k2))/(CN_alpha_body + fins.CN_alpha(i, k2));
-        total.CN_alpha(i) = CN_alpha_body + fins.CN_alpha(i, k2);
+        total.X(i) = (X_body*CN_alpha_body + fins.X(i)*fins.CN_alpha(i, k2))/(CN_alpha_body + fins.CN_alpha(i, k2));
+        total.CN_alpha(i) = CN_alpha_body + fins.CN_alpha(i);
+        total.CM_alpha(i) = CM_alpha_body + fins.CM_alpha(i);
     end
+    
 end
 
-
+total.xle = settings.Lnose + sum(settings.Lpitot) + settings.Lcentr - settings.xi(end);
+total.xcg = settings.xcg + settings.Lnose + sum(settings.Lpitot);
 out.total = total;
 
 
